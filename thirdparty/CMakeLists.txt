@@ -47,17 +47,6 @@ ExternalProject_Add(JSON
         ${CMAKE_CURRENT_BINARY_DIR}/download/nlohmann 
             ${THIRDPARTY_INSTALL_PREFIX}/include/nlohmann)
 
-# Build and install the yaml-cpp library
-ExternalProject_Add(YAMLCPP
-    PREFIX build
-    URL ${CMAKE_CURRENT_SOURCE_DIR}/yaml-cpp/yaml-cpp-0.5.3.zip
-    SOURCE_DIR build/src/yaml-cpp
-    BINARY_DIR build/src/yaml-cpp-build
-    STAMP_DIR build/src/yaml-cpp-stamp
-    CMAKE_ARGS ${THIRDPARTY_COMMON_ARGS}
-        -DYAML_CPP_BUILD_TOOLS=OFF
-        -DYAML_CPP_BUILD_CONTRIB=OFF)
-
 # Build and install the miniz library
 ExternalProject_Add(MINIZ
     PREFIX build
