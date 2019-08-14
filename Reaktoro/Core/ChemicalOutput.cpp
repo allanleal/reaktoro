@@ -106,7 +106,7 @@ struct ChemicalOutput::Impl
 
     auto spacing(std::string word) const -> std::size_t
     {
-        return word.size() + std::max(5, 20 - static_cast<int>(word.size()));
+        return word.size() + std::max(5, 25 - static_cast<int>(word.size()));
     }
 
     auto open() -> void
