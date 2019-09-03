@@ -59,24 +59,6 @@ if(NOT CMAKE_BUILD_TYPE)
     set_property(CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS Debug Release MinSizeRel RelWithDebInfo)
 endif()
 
-# Set libraries to be compiled with position independent code mode (i.e., fPIC option in GNU compilers)
-set(CMAKE_POSITION_INDEPENDENT_CODE ON)
-
-# Set the list of compiler flags for GNU compiler
-if(${CMAKE_CXX_COMPILER_ID} MATCHES "GNU")
-    add_compile_options(-std=c++11)
-endif()
-
-# Set the list of compiler flags for Clang compiler
-if(${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
-    add_compile_options(-std=c++11)
-endif()
-
-# Set the list of compiler flags for Intel compiler
-if(${CMAKE_CXX_COMPILER_ID} MATCHES "Intel")
-    add_compile_options(-std=c++11)
-endif()
-
 # Set the list of compiler flags for MSVC compiler
 if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
     add_compile_options("/W0 -D_SCL_SECURE_NO_WARNINGS /MP4")
