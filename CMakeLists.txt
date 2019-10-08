@@ -61,7 +61,15 @@ endif()
 
 # Set the list of compiler flags for MSVC compiler
 if(${CMAKE_CXX_COMPILER_ID} STREQUAL MSVC)
-    add_compile_options("/W0 -D_SCL_SECURE_NO_WARNINGS /MP4")
+    add_compile_options(
+        /D_SCL_SECURE_NO_WARNINGS
+        /D_CRT_SECURE_NO_WARNINGS=1
+        /MP4
+        /EHsc
+        /D_SILENCE_TR1_NAMESPACE_DEPRECATION_WARNING
+        /DNOMINMAX
+        /Zc:__cplusplus  # This is needed to ensure __cplusplus is replaced with a correct value (e.g. 201703L) instead of fixed 199711L (see more on https://docs.microsoft.com/bs-cyrl-ba/cpp/build/reference/zc-cplusplus?view=vs-2019)
+    )
 endif()
 
 # Set the local directory where the third-party libraries are installed
