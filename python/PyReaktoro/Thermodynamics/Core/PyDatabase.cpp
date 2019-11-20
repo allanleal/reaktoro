@@ -27,6 +27,9 @@ namespace py = pybind11;
 #include <Reaktoro/Thermodynamics/Species/GaseousSpecies.hpp>
 #include <Reaktoro/Thermodynamics/Species/MineralSpecies.hpp>
 
+// ThermoFun includes
+#include <ThermoFun/Database.h>
+
 namespace Reaktoro {
 
 void exportDatabase(py::module& m)
@@ -43,6 +46,7 @@ void exportDatabase(py::module& m)
     py::class_<Database>(m, "Database")
         .def(py::init<>())
         .def(py::init<std::string>())
+        .def(py::init<const ThermoFun::Database&>())
         .def("elements", &Database::elements)
         .def("aqueousSpecies", aqueousSpecies1)
         .def("aqueousSpecies", aqueousSpecies2, py::return_value_policy::reference_internal)

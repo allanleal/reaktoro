@@ -33,10 +33,25 @@ namespace py = pybind11;
 #include <Reaktoro/Thermodynamics/Species/MineralSpecies.hpp>
 #include <Reaktoro/Thermodynamics/Reactions/MineralReaction.hpp>
 
+// ThermoFun includes
+#include <ThermoFun/Database.h>
+
 namespace Reaktoro {
 
 void exportChemicalEditor(py::module& m)
 {
+    auto setTemperatures = [](ChemicalEditor& self, py::array_t<double> values, std::string units)
+    {
+        std::vector<double> copy(values.data(), values.data() + values.size());
+        self.setTemperatures(copy, units);
+    };
+
+    auto setPressures = [](ChemicalEditor& self, py::array_t<double> values, std::string units)
+    {
+        std::vector<double> copy(values.data(), values.data() + values.size());
+        self.setPressures(copy, units);
+    };
+
     auto addPhase1 = static_cast<AqueousPhase&(ChemicalEditor::*)(const AqueousPhase&)>(&ChemicalEditor::addPhase);
     auto addPhase2 = static_cast<GaseousPhase&(ChemicalEditor::*)(const GaseousPhase&)>(&ChemicalEditor::addPhase);
     auto addPhase3 = static_cast<MineralPhase&(ChemicalEditor::*)(const MineralPhase&)>(&ChemicalEditor::addPhase);
@@ -65,18 +80,30 @@ void exportChemicalEditor(py::module& m)
     py::class_<ChemicalEditor>(m, "ChemicalEditor")
         .def(py::init<>())
         .def(py::init<const Database&>())
-        .def("setTemperatures", &ChemicalEditor::setTemperatures)
-        .def("setPressures", &ChemicalEditor::setPressures)
+        .def(py::init<const ThermoFun::Database&>())
+        .def("setTemperatures", setTemperatures)
+        .def("setPressures", setPressures)
         .def("addPhase", addPhase1, py::return_value_policy::reference_internal)
         .def("addPhase", addPhase2, py::return_value_policy::reference_internal)
         .def("addPhase", addPhase3, py::return_value_policy::reference_internal)
         .def("addReaction", &ChemicalEditor::addReaction, py::return_value_policy::reference_internal)
-        .def("addAqueousPhase", addAqueousPhase1, py::return_value_policy::reference_internal)
-        .def("addAqueousPhase", addAqueousPhase2, py::return_value_policy::reference_internal)
-        .def("addGaseousPhase", addGaseousPhase1, py::return_value_policy::reference_internal)
-        .def("addGaseousPhase", addGaseousPhase2, py::return_value_policy::reference_internal)
-        .def("addMineralPhase", addMineralPhase1, py::return_value_policy::reference_internal)
-        .def("addMineralPhase", addMineralPhase2, py::return_value_policy::reference_internal)
+
+        .def("addAqueousPhase", &ChemicalEditor::addAqueousPhase, py::return_value_policy::reference_internal)
+        .def("addAqueousPhaseWithElements", &ChemicalEditor::addAqueousPhaseWithElements, py::return_value_policy::reference_internal)
+        .def("addAqueousPhaseWithElementsOf", &ChemicalEditor::addAqueousPhaseWithElementsOf, py::return_value_policy::reference_internal)
+
+        .def("addGaseousPhase", &ChemicalEditor::addGaseousPhase, py::return_value_policy::reference_internal)
+        .def("addGaseousPhaseWithElements", &ChemicalEditor::addGaseousPhaseWithElements, py::return_value_policy::reference_internal)
+        .def("addGaseousPhaseWithElementsOf", &ChemicalEditor::addGaseousPhaseWithElementsOf, py::return_value_policy::reference_internal)
+
+        .def("addLiquidPhase", &ChemicalEditor::addLiquidPhase, py::return_value_policy::reference_internal)
+        .def("addLiquidPhaseWithElements", &ChemicalEditor::addLiquidPhaseWithElements, py::return_value_policy::reference_internal)
+        .def("addLiquidPhaseWithElementsOf", &ChemicalEditor::addLiquidPhaseWithElementsOf, py::return_value_policy::reference_internal)
+
+        .def("addMineralPhase", &ChemicalEditor::addMineralPhase, py::return_value_policy::reference_internal)
+        .def("addMineralPhaseWithElements", &ChemicalEditor::addMineralPhaseWithElements, py::return_value_policy::reference_internal)
+        .def("addMineralPhaseWithElementsOf", &ChemicalEditor::addMineralPhaseWithElementsOf, py::return_value_policy::reference_internal)
+
         .def("addMineralReaction", addMineralReaction1, py::return_value_policy::reference_internal)
         .def("addMineralReaction", addMineralReaction2, py::return_value_policy::reference_internal)
         .def("aqueousPhase", aqueousPhase1, py::return_value_policy::reference_internal)
