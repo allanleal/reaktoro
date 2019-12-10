@@ -459,7 +459,7 @@ struct Database::Impl
                 if(valid(species))
                     mineral_species_map[species.name()] = species;
 
-            } else RuntimeError("Could not parse the species `" + name + " in the database.", 
+            } else RuntimeError("Could not parse the species `" + name + " in the database.",
                 "The type of the species is unknown.");
         }
     }
