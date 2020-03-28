@@ -15,27 +15,28 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this library. If not, see <http://www.gnu.org/licenses/>.
 
-#include "GaseousChemicalModelCubicEOS.hpp"
+#include "FluidChemicalModelCubicEOS.hpp"
 
 // C++ includes
 #include <map>
 
 // Reaktoro includes
 #include <Reaktoro/Common/Exception.hpp>
+#include <Reaktoro/Core/Phase.hpp>
 #include <Reaktoro/Thermodynamics/EOS/CubicEOS.hpp>
-#include <Reaktoro/Thermodynamics/Mixtures/GaseousMixture.hpp>
+#include <Reaktoro/Thermodynamics/Mixtures/FluidMixture.hpp>
 
 namespace Reaktoro {
-namespace {
 
-auto gaseousChemicalModelCubicEOS(const GaseousMixture& mixture, CubicEOS::Model modeltype) -> PhaseChemicalModel
+auto fluidChemicalModelCubicEOS(
+    const FluidMixture& mixture, PhaseType phase_type, CubicEOS::Params params) -> PhaseChemicalModel
 {
     // The number of gases in the mixture
     const unsigned nspecies = mixture.numSpecies();
 
     // Get the the critical temperatures, pressures and acentric factors of the gases
     std::vector<double> Tc, Pc, omega;
-    for(GaseousSpecies species : mixture.species())
+    for (FluidSpecies species : mixture.species())
     {
         Tc.push_back(species.criticalTemperature());
         Pc.push_back(species.criticalPressure());
@@ -43,15 +44,23 @@ auto gaseousChemicalModelCubicEOS(const GaseousMixture& mixture, CubicEOS::Model
     }
 
     // Initialize the CubicEOS instance
-    CubicEOS eos(nspecies);
-    eos.setPhaseAsVapor();
+    CubicEOS eos(nspecies, params);
+    if (phase_type == PhaseType::Liquid) {
+        eos.setPhaseAsLiquid();
+    } else {
+        Assert(
+            phase_type == PhaseType::Gas,
+            "Logic error in fluidChemicalModelCubicEOS",
+            "phase_type should be Liquid or Gaseous, but is: " << (int) phase_type
+        );
+        eos.setPhaseAsVapor();
+    }
     eos.setCriticalTemperatures(Tc);
     eos.setCriticalPressures(Pc);
     eos.setAcentricFactors(omega);
-    eos.setModel(modeltype);
 
     // The state of the gaseous mixture
-    GaseousMixtureState state;
+    FluidMixtureState state;
 
     // Define the chemical model function of the gaseous phase
     PhaseChemicalModel model = [=](PhaseChemicalModelResult& res, Temperature T, Pressure P, VectorConstRef n) mutable
@@ -62,11 +71,11 @@ auto gaseousChemicalModelCubicEOS(const GaseousMixture& mixture, CubicEOS::Model
         // The mole fractions of the species
         const auto& x = state.x;
 
-        // Evaluate the CubicEOS object function
+        // Evaluate the CubicEOS
         const CubicEOS::Result eosres = eos(T, P, x);
 
         // The ln of mole fractions
-        const ChemicalVector ln_x = log(x);
+        const VectorXd ln_x = log(x);
 
         // The ln of pressure in bar units
         const ThermoScalar ln_Pbar = log(1e-5 * P);
@@ -74,10 +83,11 @@ auto gaseousChemicalModelCubicEOS(const GaseousMixture& mixture, CubicEOS::Model
         // Create an alias to the ln fugacity coefficients
         const auto& ln_phi = eosres.ln_fugacity_coefficients;
 
-        // Fill the chemical properties of the gaseous phase
+        // Fill the chemical properties of the fluid phase
         res.ln_activity_coefficients = ln_phi;
         res.ln_activities = ln_phi + ln_x + ln_Pbar;
         res.molar_volume = eosres.molar_volume;
+        res.partial_molar_volumes = eosres.partial_molar_volumes;
         res.residual_molar_gibbs_energy = eosres.residual_molar_gibbs_energy;
         res.residual_molar_enthalpy = eosres.residual_molar_enthalpy;
         res.residual_molar_heat_capacity_cp = eosres.residual_molar_heat_capacity_cp;
@@ -85,28 +95,6 @@ auto gaseousChemicalModelCubicEOS(const GaseousMixture& mixture, CubicEOS::Model
     };
 
     return model;
-}
-
-} // namespace
-
-auto gaseousChemicalModelVanDerWaals(const GaseousMixture& mixture) -> PhaseChemicalModel
-{
-    return gaseousChemicalModelCubicEOS(mixture, CubicEOS::VanDerWaals);
-}
-
-auto gaseousChemicalModelRedlichKwong(const GaseousMixture& mixture) -> PhaseChemicalModel
-{
-    return gaseousChemicalModelCubicEOS(mixture, CubicEOS::RedlichKwong);
-}
-
-auto gaseousChemicalModelSoaveRedlichKwong(const GaseousMixture& mixture) -> PhaseChemicalModel
-{
-    return gaseousChemicalModelCubicEOS(mixture, CubicEOS::SoaveRedlichKwong);
-}
-
-auto gaseousChemicalModelPengRobinson(const GaseousMixture& mixture) -> PhaseChemicalModel
-{
-    return gaseousChemicalModelCubicEOS(mixture, CubicEOS::PengRobinson);
 }
 
 } // namespace Reaktoro

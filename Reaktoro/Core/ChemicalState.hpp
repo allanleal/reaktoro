@@ -23,7 +23,6 @@
 
 // Reaktoro includes
 #include <Reaktoro/Math/Matrix.hpp>
-#include <Reaktoro/Common/ScalarTypes.hpp>
 
 namespace Reaktoro {
 
@@ -365,6 +364,9 @@ public:
 
     /// Return the chemical properties of the system.
     auto properties() const -> ChemicalProperties;
+
+    /// Output the ChemicalState instance to a stream.
+    auto output(std::ostream& out, int precision = 6) const -> void;
 
     /// Output the ChemicalState instance to a file.
     auto output(std::string filename) const -> void;

@@ -18,7 +18,6 @@
 #include "EquilibriumSolver.hpp"
 
 // Reaktoro includes
-#include <Reaktoro/Common/ChemicalVector.hpp>
 #include <Reaktoro/Common/Constants.hpp>
 #include <Reaktoro/Common/ConvertUtils.hpp>
 #include <Reaktoro/Common/Exception.hpp>
@@ -81,16 +80,16 @@ struct EquilibriumSolver::Impl
     ThermoVector u0;
 
     /// The chemical potentials of the species
-    ChemicalVector u;
+    VectorXd u;
 
     /// The chemical potentials of the equilibrium species
-    ChemicalVector ue;
+    VectorXd ue;
 
     /// The chemical potentials of the inert species
     Vector ui;
 
     /// The mole fractions of the equilibrium species
-    ChemicalVector xe;
+    VectorXd xe;
 
     /// The optimisation problem
     OptimumProblem optimum_problem;
@@ -330,6 +329,13 @@ struct EquilibriumSolver::Impl
         state.setSpeciesAmounts(n);
         state.setElementDualPotentials(y);
         state.setSpeciesDualPotentials(z);
+    }
+
+    /// Find a feasible approximation for an equilibrium problem with all elements present on chemical system.
+    auto approximate_with_all_element_amounts(ChemicalState& state, double T, double P, VectorConstRef b) -> EquilibriumResult
+    {
+        Vector be = b(iee);
+        return approximate(state, T, P, be);
     }
 
     /// Find a feasible approximation for an equilibrium problem.
