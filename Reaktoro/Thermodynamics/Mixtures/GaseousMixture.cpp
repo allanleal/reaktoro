@@ -15,24 +15,24 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this library. If not, see <http://www.gnu.org/licenses/>.
 
-#include "GaseousMixture.hpp"
+#include "FluidMixture.hpp"
 
 namespace Reaktoro {
 
-GaseousMixture::GaseousMixture()
-: GeneralMixture<GaseousSpecies>()
+FluidMixture::FluidMixture()
+    : GeneralMixture<FluidSpecies>()
 {}
 
-GaseousMixture::GaseousMixture(const std::vector<GaseousSpecies>& species)
-: GeneralMixture<GaseousSpecies>(species)
+FluidMixture::FluidMixture(const std::vector<FluidSpecies>& species)
+    : GeneralMixture<FluidSpecies>(species)
 {}
 
-GaseousMixture::~GaseousMixture()
+FluidMixture::~FluidMixture()
 {}
 
-auto GaseousMixture::state(Temperature T, Pressure P, VectorConstRef n) const -> GaseousMixtureState
+auto FluidMixture::state(Temperature T, Pressure P, VectorXrConstRef n) const -> FluidMixtureState
 {
-    GaseousMixtureState res;
+    FluidMixtureState res;
     res.T = T;
     res.P = P;
     res.x = moleFractions(n);
