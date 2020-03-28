@@ -74,7 +74,7 @@ auto lnActivityConstants(const AqueousPhase& phase) -> ThermoVectorFunction
     // Set the ln activity constant of water to zero
     ln_c[iH2O] = 0.0;
 
-    ThermoVectorFunction f = [=](Temperature T, Pressure P) mutable
+    ThermoVectorFunction f = [=](real T, real P) mutable
     {
         return ln_c;
     };
@@ -87,7 +87,7 @@ auto lnActivityConstants(const GaseousPhase& phase) -> ThermoVectorFunction
     // The ln activity constants of the generic species
     VectorXr ln_c(phase.numSpecies());
 
-    ThermoVectorFunction f = [=](Temperature T, Pressure P) mutable
+    ThermoVectorFunction f = [=](real T, real P) mutable
     {
         ln_c = log(P * 1e-5); // ln(Pbar)
         return ln_c;
@@ -101,7 +101,7 @@ auto lnActivityConstants(const MineralPhase& phase) -> ThermoVectorFunction
     // The ln activity constants of the mineral species
     VectorXr ln_c(phase.numSpecies());
 
-    ThermoVectorFunction f = [=](Temperature T, Pressure P) mutable
+    ThermoVectorFunction f = [=](real T, real P) mutable
     {
         return ln_c;
     };
@@ -440,7 +440,7 @@ public:
         ThermoVectorFunction ln_activity_constants_func         = lnActivityConstants(phase);
 
         // Define the thermodynamic model function of the species
-        PhaseThermoModel thermo_model = [=](PhaseThermoModelResult& res, Temperature T, Pressure P)
+        PhaseThermoModel thermo_model = [=](PhaseThermoModelResult& res, real T, real P)
         {
             // Calculate the standard thermodynamic properties of each species
             res.standard_partial_molar_gibbs_energies     = standard_gibbs_energies_interp(T, P);
