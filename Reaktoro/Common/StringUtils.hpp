@@ -23,10 +23,43 @@
 #include <cstdlib>
 #include <functional>
 #include <locale>
+#include <sstream>
 #include <string>
 #include <vector>
 
 namespace Reaktoro {
+namespace internal {
+
+template <typename Arg>
+auto stringfy(std::stringstream& ss, const std::string& sep, const Arg& item)
+{
+    ss << item;
+}
+
+template <typename Arg, typename... Args>
+auto stringfy(std::stringstream& ss, const std::string& sep, const Arg& item, Args... items) -> void
+{
+    ss << item << sep;
+    stringfy(ss, sep, items...);
+}
+
+} // namespace internal
+
+/// Concatenate the arguments into a string using a given separator string.
+template <typename... Args>
+auto stringfy(const std::string& sep, Args... items) -> std::string
+{
+    std::stringstream ss;
+    internal::stringfy(ss, sep, items...);
+    return ss.str();
+}
+
+/// Concatenate the arguments into a string without any separator string.
+template <typename... Args>
+auto str(Args... items) -> std::string
+{
+    return stringfy("", items...);
+}
 
 /// Return a string with lower case characters.
 inline auto lowercase(std::string str) -> std::string
