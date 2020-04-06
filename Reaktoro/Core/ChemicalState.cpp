@@ -27,6 +27,7 @@
 #include <Reaktoro/Common/Exception.hpp>
 #include <Reaktoro/Common/StringUtils.hpp>
 #include <Reaktoro/Common/Units.hpp>
+#include <Reaktoro/Core/Phase.hpp>
 #include <Reaktoro/Core/ChemicalProperties.hpp>
 #include <Reaktoro/Core/ChemicalProperty.hpp>
 #include <Reaktoro/Core/ChemicalSystem.hpp>
@@ -130,7 +131,7 @@ struct ChemicalState::Impl
 
     auto setSpeciesAmount(std::string species, real amount) -> void
     {
-        const Index index = system.indexSpeciesWithError(species);
+        const auto index = system.indexSpeciesWithError(species);
         setSpeciesAmount(index, amount);
     }
 
@@ -142,7 +143,7 @@ struct ChemicalState::Impl
 
     auto setSpeciesAmount(std::string species, real amount, std::string units) -> void
     {
-        const Index index = system.indexSpeciesWithError(species);
+        const auto index = system.indexSpeciesWithError(species);
         setSpeciesAmount(index, amount, units);
     }
 
@@ -160,7 +161,7 @@ struct ChemicalState::Impl
 
     auto setSpeciesMass(std::string species, real mass) -> void
     {
-        const Index index = system.indexSpeciesWithError(species);
+        const auto index = system.indexSpeciesWithError(species);
         setSpeciesMass(index, mass);
     }
 
@@ -172,7 +173,7 @@ struct ChemicalState::Impl
 
     auto setSpeciesMass(std::string species, real mass, std::string units) -> void
     {
-        const Index index = system.indexSpeciesWithError(species);
+        const auto index = system.indexSpeciesWithError(species);
         setSpeciesMass(index, mass, units);
     }
 
@@ -216,8 +217,8 @@ struct ChemicalState::Impl
             "The given scalar `" + std::to_string(scalar) << "` is negative.");
         Assert(index < system.numPhases(), "Cannot set the volume of the phase.",
             "The given phase index is out of range.");
-        const Index start = system.indexFirstSpeciesInPhase(index);
-        const Index size = system.numSpeciesInPhase(index);
+        const auto start = system.indexFirstSpeciesInPhase(index);
+        const auto size = system.numSpeciesInPhase(index);
         for(unsigned i = 0; i < size; ++i)
             setSpeciesAmount(start + i, speciesAmount(start + i) * scalar);
     }
@@ -242,7 +243,7 @@ struct ChemicalState::Impl
 
     auto scalePhaseVolume(std::string name, real volume) -> void
     {
-        const Index index = system.indexPhase(name);
+        const auto index = system.indexPhase(name);
         scalePhaseVolume(index, volume);
     }
 
@@ -307,7 +308,7 @@ struct ChemicalState::Impl
 
     auto speciesAmount(std::string name) const -> real
     {
-        const Index index = system.indexSpeciesWithError(name);
+        const auto index = system.indexSpeciesWithError(name);
         return speciesAmount(index);
     }
 
@@ -318,28 +319,39 @@ struct ChemicalState::Impl
 
     auto speciesAmount(std::string name, std::string units) const -> real
     {
-        const Index index = system.indexSpeciesWithError(name);
+        const auto index = system.indexSpeciesWithError(name);
         return speciesAmount(index, units);
     }
 
     auto elementAmounts() const -> VectorXr
     {
-        return system.elementAmounts(n);
+        const auto& A = system.formulaMatrix();
+        return A * n;
     }
 
-    auto elementAmountsInPhase(Index index) const -> VectorXr
+    auto elementAmountsInPhase(Index iphase) const -> VectorXr
     {
-        return system.elementAmountsInPhase(index, n);
+        const auto& A = system.formulaMatrix();
+        const auto first = system.indexFirstSpeciesInPhase(iphase);
+        const auto size = system.numSpeciesInPhase(iphase);
+        const auto Ap = cols(A, first, size);
+        const auto np = rows(n, first, size);
+        return Ap * np;
     }
 
-    auto elementAmountsInSpecies(const Indices& indices) const -> VectorXr
+    auto elementAmountsInSpecies(const Indices& ispecies) const -> VectorXr
     {
-        return system.elementAmountsInSpecies(indices, n);
+        const auto& A = system.formulaMatrix();
+        VectorXr res = VectorXr::Zero(A.rows());
+        for(auto i : ispecies)
+            res += A.col(i) * n[i];
+        return res;
     }
 
     auto elementAmount(Index ielement) const -> real
     {
-        return system.elementAmount(ielement, n);
+        const auto& A = system.formulaMatrix();
+        return A.row(ielement) * n;
     }
 
     auto elementAmount(std::string element) const -> real
@@ -359,13 +371,18 @@ struct ChemicalState::Impl
 
     auto elementAmountInPhase(Index ielement, Index iphase) const -> real
     {
-        return system.elementAmountInPhase(ielement, iphase, n);
+        const auto& A = system.formulaMatrix();
+        const auto first = system.indexFirstSpeciesInPhase(iphase);
+        const auto size = system.numSpeciesInPhase(iphase);
+        const auto Ap = cols(A, first, size);
+        const auto np = rows(n, first, size);
+        return Ap.row(ielement) * np;
     }
 
     auto elementAmountInPhase(std::string element, std::string phase) const -> real
     {
-        const unsigned ielement = system.indexElementWithError(element);
-        const unsigned iphase = system.indexPhaseWithError(phase);
+        const auto ielement = system.indexElementWithError(element);
+        const auto iphase = system.indexPhaseWithError(phase);
         return elementAmountInPhase(ielement, iphase);
     }
 
@@ -381,7 +398,10 @@ struct ChemicalState::Impl
 
     auto elementAmountInSpecies(Index ielement, const Indices& ispecies) const -> real
     {
-        return system.elementAmountInSpecies(ielement, ispecies, n);
+        const auto& A = system.formulaMatrix();
+        const auto Ai = cols(A, ispecies);
+        const auto ni = rows(n, ispecies);
+        return Ai.row(ielement) * ni;
     }
 
     auto elementAmountInSpecies(Index ielement, const Indices& ispecies, std::string units) const -> real
@@ -391,14 +411,14 @@ struct ChemicalState::Impl
 
     auto phaseAmount(Index index) const -> real
     {
-        const Index first = system.indexFirstSpeciesInPhase(index);
-        const Index size = system.numSpeciesInPhase(index);
+        const auto first = system.indexFirstSpeciesInPhase(index);
+        const auto size = system.numSpeciesInPhase(index);
         return rows(n, first, size).sum();
     }
 
     auto phaseAmount(std::string name) const -> real
     {
-        const Index index = system.indexPhaseWithError(name);
+        const auto index = system.indexPhaseWithError(name);
         return phaseAmount(index);
     }
 
@@ -424,7 +444,7 @@ struct ChemicalState::Impl
     {
         // Auxiliary variables
         const auto ln10 = 2.302585092994046;
-        const unsigned num_phases = system.numPhases();
+        const auto num_phases = system.numPhases();
         const auto RT = universalGasConstant * T;
 
         // Calculate the normalized z-Lagrange multipliers for all species
@@ -440,7 +460,7 @@ struct ChemicalState::Impl
         for(unsigned i = 0 ; i < num_phases; ++i)
         {
             // The number of species in the current phase
-            const unsigned num_species = system.numSpeciesInPhase(i);
+            const auto num_species = system.numSpeciesInPhase(i);
 
             if(num_species == 1)
             {
@@ -807,8 +827,8 @@ auto operator<<(std::ostream& out, const ChemicalState& state) -> std::ostream&
     const VectorXr phase_densities = phase_masses/phase_volumes;
     const VectorXr phase_stability_indices = state.phaseStabilityIndices();
 
-    const unsigned num_phases = system.numPhases();
-    const unsigned bar_size = std::max(unsigned(9), num_phases + 2) * 25;
+    const auto num_phases = system.numPhases();
+    const auto bar_size = std::max(unsigned(9), num_phases + 2) * 25;
     const std::string bar1(bar_size, '=');
     const std::string bar2(bar_size, '-');
 
@@ -841,9 +861,9 @@ auto operator<<(std::ostream& out, const ChemicalState& state) -> std::ostream&
     for(unsigned i = 0; i < system.numElements(); ++i)
     {
         out << std::left << std::setw(25) << system.element(i).name();
-        out << std::left << std::setw(25) << system.elementAmount(i, n);
+        out << std::left << std::setw(25) << state.elementAmount(i);
         for(unsigned j = 0; j < system.numPhases(); ++j)
-            out << std::left << std::setw(25) << system.elementAmountInPhase(i, j, n);
+            out << std::left << std::setw(25) << state.elementAmountInPhase(i, j);
         out << std::left << std::setw(25) << y[i]/1000; // convert from J/mol to kJ/mol
         out << std::endl;
     }
