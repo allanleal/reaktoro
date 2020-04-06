@@ -77,7 +77,8 @@ class MineralReaction;
 /// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ///
 /// @see Database, ChemicalSystem, ReactionSystem, AqueousPhase, GaseousPhase,
-/// MineralPhase, AqueousSpecies, GaseousSpecies, MineralSpecies, MineralReaction
+/// LiquidPhase, MineralPhase, Species, Species, LiquidSpecies,
+/// Species, MineralReaction
 ///
 /// @ingroup Core
 class ChemicalEditor

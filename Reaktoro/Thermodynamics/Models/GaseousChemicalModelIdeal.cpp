@@ -22,20 +22,22 @@
 
 namespace Reaktoro {
 
-using std::log;
+using LiquidMixture = GeneralMixture;
 
 auto fluidChemicalModelIdeal(const GeneralMixture& mixture)-> ActivityModelFn
 {
-    MixtureState state;
+public:
+    /// Construct a default LiquidPhase instance.
+    LiquidPhase()
+        : FluidPhase("Liquid", StateOfMatter::Liquid)
+    {}
 
-    ActivityModelFn model = [=](ActivityProps& res, real T, real P, VectorXrConstRef n) mutable
-    {
-        state = mixture.state(T, P, n);
-        const auto Pbar = 1e-5 * P;
-        res.ln_activities = state.x.log() + log(Pbar);
-    };
-
-    return model;
-}
+    /// Construct a GaseousPhase instance with given gaseous mixture.
+    /// The Peng-Robinson equation of state is chosen by default to calculate the
+    /// thermodynamic and chemical properties of this GaseousPhase object.
+    explicit LiquidPhase(const LiquidMixture& mixture)
+        : FluidPhase(mixture, "Liquid", StateOfMatter::Liquid)
+    {}
+};
 
 } // namespace Reaktoro
