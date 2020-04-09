@@ -1,6 +1,6 @@
 // Reaktoro is a unified framework for modeling chemically reactive systems.
 //
-// Copyright (C) 2014-2018 Allan Leal
+// Copyright (C) 2014-2020 Allan Leal
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -15,28 +15,30 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this library. If not, see <http://www.gnu.org/licenses/>.
 
-// pybind11 includes
-#include <pybind11/pybind11.h>
-namespace py = pybind11;
+#include <PyReaktoro/PyReaktoro.hpp>
 
 // Reaktoro includes
-#include <Reaktoro/Thermodynamics/Species/GaseousSpecies.hpp>
+#include <Reaktoro/Thermodynamics/Species/FluidSpecies.hpp>
 
 namespace Reaktoro {
 
-void exportGaseousSpecies(py::module& m)
+void exportFluidSpecies(py::module& m)
 {
-    py::class_<GaseousSpecies, Species>(m, "GaseousSpecies")
+    py::class_<FluidSpecies, Species>(m, "FluidSpecies")
         .def(py::init<>())
-        .def("setCriticalTemperature", &GaseousSpecies::setCriticalTemperature)
-        .def("setCriticalPressure", &GaseousSpecies::setCriticalPressure)
-        .def("setAcentricFactor", &GaseousSpecies::setAcentricFactor)
-        .def("setThermoData", &GaseousSpecies::setThermoData)
-        .def("criticalTemperature", &GaseousSpecies::criticalTemperature)
-        .def("criticalPressure", &GaseousSpecies::criticalPressure)
-        .def("acentricFactor", &GaseousSpecies::acentricFactor)
-        .def("thermoData", &GaseousSpecies::thermoData, py::return_value_policy::reference_internal)
+        .def("setCriticalTemperature", &FluidSpecies::setCriticalTemperature)
+        .def("setCriticalPressure", &FluidSpecies::setCriticalPressure)
+        .def("setAcentricFactor", &FluidSpecies::setAcentricFactor)
+        .def("setThermoData", &FluidSpecies::setThermoData)
+        .def("criticalTemperature", &FluidSpecies::criticalTemperature)
+        .def("criticalPressure", &FluidSpecies::criticalPressure)
+        .def("acentricFactor", &FluidSpecies::acentricFactor)
+        .def("thermoData", &FluidSpecies::thermoData, py::return_value_policy::reference_internal)
         ;
+
+    m.attr("GaseousSpecies") = m.attr("FluidSpecies");
+    m.attr("LiquidSpecies") = m.attr("FluidSpecies");
+
 }
 
 } // namespace Reaktoro
