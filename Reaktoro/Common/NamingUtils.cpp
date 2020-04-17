@@ -21,8 +21,8 @@
 #include <map>
 
 // Reaktoro includes
+#include <Reaktoro/Common/Algorithms.hpp>
 #include <Reaktoro/Common/Exception.hpp>
-#include <Reaktoro/Common/SetUtils.hpp>
 
 namespace Reaktoro {
 namespace {
