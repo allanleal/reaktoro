@@ -23,8 +23,8 @@ namespace py = pybind11;
 #include <Reaktoro/Common/ReactionEquation.hpp>
 #include <Reaktoro/Core/ChemicalSystem.hpp>
 #include <Reaktoro/Core/Reaction.hpp>
-#include <Reaktoro/Thermodynamics/Reactions/MineralMechanism.hpp>
-#include <Reaktoro/Thermodynamics/Reactions/MineralReaction.hpp>
+#include <Reaktoro/Extensions/Geochemistry/MineralMechanism.hpp>
+#include <Reaktoro/Extensions/Geochemistry/MineralReaction.hpp>
 
 namespace Reaktoro {
 

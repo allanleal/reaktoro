@@ -21,7 +21,7 @@
 namespace py = pybind11;
 
 // Reaktoro includes
-#include <Reaktoro/Thermodynamics/Reactions/MineralMechanism.hpp>
+#include <Reaktoro/Extensions/Geochemistry/MineralMechanism.hpp>
 
 namespace Reaktoro {
 
