@@ -23,8 +23,8 @@ namespace py = pybind11;
 // Reaktoro includes
 #include <Reaktoro/Common/StringList.hpp>
 #include <Reaktoro/Core/ChemicalSystem.hpp>
-#include <Reaktoro/Interfaces/Phreeqc.hpp>
-#include <Reaktoro/Interfaces/PhreeqcEditor.hpp>
+#include <Reaktoro/Extensions/Interfaces/Phreeqc.hpp>
+#include <Reaktoro/Extensions/Interfaces/PhreeqcEditor.hpp>
 
 namespace Reaktoro {
 

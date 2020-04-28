@@ -20,7 +20,7 @@
 namespace py = pybind11;
 
 // Reaktoro includes
-#include <Reaktoro/Extensions/Geochemistry/MineralCatalyst.hpp>
+#include <Reaktoro/Reactions/Mineral/MineralCatalyst.hpp>
 
 namespace Reaktoro {
 

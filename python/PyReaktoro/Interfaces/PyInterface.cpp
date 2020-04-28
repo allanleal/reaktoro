@@ -23,7 +23,7 @@ namespace py = pybind11;
 // Reaktoro includes
 #include <Reaktoro/Core/ChemicalState.hpp>
 #include <Reaktoro/Core/ChemicalSystem.hpp>
-#include <Reaktoro/Interfaces/Interface.hpp>
+#include <Reaktoro/Extensions/Interfaces/Interface.hpp>
 
 namespace Reaktoro {
 

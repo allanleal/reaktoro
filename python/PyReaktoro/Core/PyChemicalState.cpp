@@ -27,8 +27,8 @@ namespace py = pybind11;
 #include <Reaktoro/Core/ChemicalState.hpp>
 #include <Reaktoro/Core/ChemicalSystem.hpp>
 #include <Reaktoro/Core/ThermoProperties.hpp>
-#include <Reaktoro/Interfaces/Gems.hpp>
-#include <Reaktoro/Interfaces/Phreeqc.hpp>
+#include <Reaktoro/Extensions/Interfaces/Gems.hpp>
+#include <Reaktoro/Extensions/Interfaces/Phreeqc.hpp>
 
 namespace Reaktoro {
 namespace {

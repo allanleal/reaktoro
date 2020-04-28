@@ -28,7 +28,7 @@ namespace py = pybind11;
 #include <Reaktoro/Thermodynamics/Phases/AqueousPhase.hpp>
 #include <Reaktoro/Thermodynamics/Phases/GaseousPhase.hpp>
 #include <Reaktoro/Thermodynamics/Phases/MineralPhase.hpp>
-#include <Reaktoro/Extensions/Geochemistry/MineralReaction.hpp>
+#include <Reaktoro/Reactions/Mineral/MineralReaction.hpp>
 #include <Reaktoro/Thermodynamics/Species/AqueousSpecies.hpp>
 #include <Reaktoro/Thermodynamics/Species/GaseousSpecies.hpp>
 #include <Reaktoro/Thermodynamics/Species/MineralSpecies.hpp>
