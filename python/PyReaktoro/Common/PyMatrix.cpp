@@ -20,7 +20,7 @@
 namespace py = pybind11;
 
 // Reaktoro includes
-#include <Reaktoro/Math/Matrix.hpp>
+#include <Reaktoro/Common/Matrix.hpp>
 
 namespace Reaktoro {
 
