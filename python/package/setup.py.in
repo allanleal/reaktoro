@@ -1,13 +1,15 @@
 from distutils.core import setup
 
-setup(name='reaktoro',
+setup(name='Reaktoro',
       version='${PROJECT_VERSION}',
       description='The Python interface of the Reaktoro library.',
       author='Allan Leal',
       author_email='allan.leal@erdw.ethz.ch',
-      url='https://www.reaktoro.org',
-      license='LGPLv2.1',
-      package_dir={'reaktoro': ''},
-      packages=['reaktoro'],
-      package_data={'reaktoro': ['@REAKTORO_PYTHON_MODULE_FILENAME@']}
+      url='www.reaktoro.org',
+      license='GNU LGPL v2.1',
+      packages=['reaktoro', 'reaktoro._extensions'],
+      package_data={'reaktoro': ['@REAKTORO_PYTHON_MODULE_FILENAME@', '*.pdb']},
+      python_requires='>=3.6, <4',
+      install_requires=requirements,
+      zip_safe=False
       )
