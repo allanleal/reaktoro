@@ -1,6 +1,6 @@
 // Reaktoro is a unified framework for modeling chemically reactive systems.
 //
-// Copyright (C) 2014-2020 Allan Leal
+// Copyright (C) 2014-2021 Allan Leal
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -15,25 +15,28 @@
 // You should have received a copy of the GNU Lesser General Public License
 // along with this library. If not, see <http://www.gnu.org/licenses/>.
 
-// pybind11 includes
-#include <pybind11/pybind11.h>
-namespace py = pybind11;
+#include <Reaktoro/Reaktoro.hpp>
+using namespace Reaktoro;
 
-// Reaktoro includes
-#include <Reaktoro/Reactions/Mineral/MineralCatalyst.hpp>
-
-namespace Reaktoro {
-
-void exportMineralCatalyst(py::module& m)
+int main()
 {
-    py::class_<MineralCatalyst>(m, "MineralCatalyst")
-        .def(py::init<>())
-        .def(py::init<std::string, std::string, double>())
-        .def(py::init<std::string>())
-        .def_readwrite("species", &MineralCatalyst::species)
-        .def_readwrite("quantity", &MineralCatalyst::quantity)
-        .def_readwrite("power", &MineralCatalyst::power)
-        ;
-}
+    Database database("supcrt98.xml");
 
-} // namespace Reaktoro
+    ChemicalEditor editor(database);
+    editor.addAqueousPhaseWithElementsOf("H2O NaCl CO2");
+    editor.addGaseousPhase({"H2O(g)", "CO2(g)"});
+    editor.addMineralPhase("Halite");
+
+    ChemicalSystem system(editor);
+
+    EquilibriumProblem problem(system);
+    problem.setTemperature(60, "celsius");
+    problem.setPressure(300, "bar");
+    problem.add("H2O", 1, "kg");
+    problem.add("CO2", 100, "g");
+    problem.add("NaCl", 0.1, "mol");
+
+    ChemicalState state = equilibrate(problem);
+
+    state.output("state.txt");
+}
