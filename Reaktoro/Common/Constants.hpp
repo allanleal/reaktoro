@@ -40,6 +40,9 @@ const double calorieToJoule = 4.184;
 /// The conversion factor from bar to pascal
 const double barToPascal = 1.0e+05;
 
+/// The conversion factor from atm to pascal
+constexpr auto atmToPascal = 101325;
+
 /// The conversion factor from cubic centimeters to cubic meters
 const double cubicCentimeterToCubicMeter = 1.0e-06;
 
