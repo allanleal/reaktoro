@@ -34,7 +34,7 @@ auto binarySearchHelper(double p, const Vec<double>& coordinates, Index begin, I
     if(end - begin == 1)
         return begin;
 
-    unsigned mid = (begin + end)/2;
+    auto mid = (begin + end)/2;
 
     if(p < coordinates[mid])
         return binarySearchHelper(p, coordinates, begin, mid);
@@ -153,8 +153,8 @@ auto BilinearInterpolator::operator()(real x, real y) const -> real
     if(y < yA) y = yA;
     if(y > yB) y = yB;
 
-    const unsigned sizex = m_xcoordinates.size();
-    const unsigned sizey = m_ycoordinates.size();
+    const auto size_x = m_xcoordinates.size();
+    const auto size_y = m_ycoordinates.size();
 
     const auto index_x = binarySearch(x, m_xcoordinates);
     const auto index_y = binarySearch(y, m_ycoordinates);
@@ -165,8 +165,7 @@ auto BilinearInterpolator::operator()(real x, real y) const -> real
     const auto j1 = (size_y == 1) ? 0 : (index_y == size_y - 1) ? index_y - 1 : index_y;
     const auto j2 = (size_y == 1) ? 0 : j1 + 1;
 
-    if(i == sizex || j == sizey)
-        interpolationOutOfBoundsError(x, xA, xB, y, yA, yB);
+    const auto k = [=](Index i, Index j) { return i + j*size_x; };
 
     const auto x1 = m_xcoordinates[i1];
     const auto x2 = m_xcoordinates[i2];
@@ -218,12 +217,12 @@ auto BilinearInterpolator::operator()(real x, real y) const -> real
 
 auto operator<<(std::ostream& out, const BilinearInterpolator& interpolator) -> std::ostream&
 {
-    const auto& xcoordinates = interpolator.xCoodinates();
-    const auto& ycoordinates = interpolator.yCoodinates();
+    const auto& xcoordinates = interpolator.xCoordinates();
+    const auto& ycoordinates = interpolator.yCoordinates();
     const auto& data         = interpolator.data();
 
-    const unsigned sizex = xcoordinates.size();
-    const unsigned sizey = ycoordinates.size();
+    const auto sizex = xcoordinates.size();
+    const auto sizey = ycoordinates.size();
 
     out << std::setw(15) << std::right << "y/x";
     for(auto x : xcoordinates)

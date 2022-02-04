@@ -54,4 +54,3 @@ if(REAKTORO_BUILD_PYTHON)
         message(WARNING "Could not find pybind11-stubgen (available via pip or conda). There will be no stubs generated for the python package reaktoro.")
     endif()
 endif()
-
