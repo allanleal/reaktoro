@@ -24,7 +24,7 @@
 #include <Reaktoro/Core/ChemicalState.hpp>
 #include <Reaktoro/Core/ChemicalSystem.hpp>
 #include <Reaktoro/Core/Phase.hpp>
-#include <Reaktoro/Thermodynamics/Surface/IonExchangeProps.hpp>
+#include <Reaktoro/Utils/IonExchangeProps.hpp>
 using namespace Reaktoro;
 
 void exportIonExchangeProps(py::module& m)
