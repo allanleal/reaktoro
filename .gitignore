@@ -13,6 +13,7 @@ _build/
 # vscode related files
 .vscode/
 .history/
+.cache/
 
 # JetBrains related files
 .idea
