@@ -36,7 +36,7 @@ auto ActivityModelDrummond(String gas, ActivityModelDrummondParams params) -> Ac
         // The index of the dissolved gas in the aqueous phase.
         const auto igas = species.indexWithFormula(gas);
 
-        ActivityModel fn = [=](ActivityPropsRef props, ActivityArgs args)
+        ActivityModel fn = [=](ActivityPropsRef props, ActivityModelArgs args)
         {
             // The aqueous mixture and its state exported by a base aqueous activity model.
             const auto& state = std::any_cast<AqueousMixtureState>(props.extra["AqueousMixtureState"]);
