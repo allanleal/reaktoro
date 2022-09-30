@@ -39,7 +39,7 @@ auto ActivityModelDrummond(String gas, ActivityModelDrummondParams params) -> Ac
         ActivityModel fn = [=](ActivityPropsRef props, ActivityModelArgs args)
         {
             // The aqueous mixture and its state exported by a base aqueous activity model.
-            const auto& state = std::any_cast<AqueousMixtureState>(props.extra["AqueousMixtureState"]);
+            const auto& state = std::any_cast<AqueousMixtureState const&>(props.extra["AqueousMixtureState"]);
 
             const auto& [a1, a2, a3, a4, a5] = params;
             const auto& T = state.T;

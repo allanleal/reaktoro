@@ -35,7 +35,7 @@ auto ActivityModelSetschenow(String neutral, real b) -> ActivityModelGenerator
         ActivityModel fn = [=](ActivityPropsRef props, ActivityModelArgs args)
         {
             // The aqueous mixture and its state exported by a base aqueous activity model.
-            const auto& state = std::any_cast<AqueousMixtureState>(props.extra["AqueousMixtureState"]);
+            const auto& state = std::any_cast<AqueousMixtureState const&>(props.extra["AqueousMixtureState"]);
 
             const auto& I = state.Is;
             props.ln_g[ineutral] = ln10 * b * I;

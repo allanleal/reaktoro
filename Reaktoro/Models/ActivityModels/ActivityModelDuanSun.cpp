@@ -91,8 +91,8 @@ auto ActivityModelDuanSun(String gas) -> ActivityModelGenerator
         ActivityModel fn = [=](ActivityPropsRef props, ActivityModelArgs args)
         {
             // The aqueous mixture and its state exported by a base aqueous activity model.
-            const auto& mixture = std::any_cast<AqueousMixture>(props.extra["AqueousMixture"]);
-            const auto& state = std::any_cast<AqueousMixtureState>(props.extra["AqueousMixtureState"]);
+            const auto& mixture = std::any_cast<AqueousMixture const&>(props.extra["AqueousMixture"]);
+            const auto& state = std::any_cast<AqueousMixtureState const&>(props.extra["AqueousMixtureState"]);
 
             // The local indices of some charged species among all charged species
             static const auto iNa  = mixture.charged().findWithFormula("Na+");
